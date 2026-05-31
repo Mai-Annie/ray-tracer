@@ -4,11 +4,24 @@
 
 #include <iostream>
 
+// Returns true if the ray hits a sphere with the given center and radius, false otherwise
+bool hit_sphere(const point3& center, double radius, const ray& r){
+    vec3 oc = center - r.origin();
+    auto a = dot(r.direction(), r.direction());
+    auto b = -2.0 * dot(r.direction(), oc);
+    auto c = dot(oc, oc) - radius*radius;
+    auto discriminant = b*b - 4*a*c;
+    return (discriminant >= 0); 
+}
+
 // Returns color for a given scene ray 
 color ray_color(const ray& r){
+    if (hit_sphere(point3(0,0,-1), 0.5, r)){
+        return color(1,0,0); // red sphere
+    }
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5 * (unit_direction.y() + 1.0); // scale y from [-1,1] to [0,1]
-    return (1.0-a) * color(1.0, 1.0, 1.0) + a * color (0.5, 0.7, 1.0); // linear blend of white and light blue based on the y value of the ray direction
+    return (1.0-a) * color(1.0, 1.0, 1.0) + a * color (1.0, 0.7, 0.8); // linear blend of white and light pink based on the y value of the ray direction
 }
 
 int main(){
