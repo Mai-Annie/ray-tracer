@@ -14,7 +14,7 @@ class interval {
             return max - min; // returns the size of the interval
         }
 
-        bool contanins(double x) const {
+        bool contains(double x) const {
             return x >= min && x <= max; // returns true if x is within the interval, false otherwise
         }
 
