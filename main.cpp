@@ -4,10 +4,11 @@
 #include "sphere.h"
 #include "hittable.h"
 
+
 // Returns color for a given scene ray 
 color ray_color(const ray& r, const hittable& world){
     hit_record rec;
-    if (world.hit(r, 0, infinity, rec)) {
+    if (world.hit(r, interval(0.001, infinity), rec)) {
         return 0.5 * (rec.normal + color(1,1,1)); // scale the normal vector from [-1,1] to [0,1] and use it as the color for a simple diffuse shading effect
     }
     vec3 unit_direction = unit_vector(r.direction());
