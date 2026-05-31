@@ -4,11 +4,7 @@
 #include "hittable.h"
 
 #include <vector>
-#include <memory>
  
-
-using std::make_shared;
-using std::shared_ptr;
 
 // hittable_list: Collection of hittable objects. It is itself a hittable object, so it can be used to represent a scene with multiple objects.
 class hittable_list : public hittable {
@@ -41,3 +37,5 @@ class hittable_list : public hittable {
             return hit_anything;
         }
 };
+
+#endif

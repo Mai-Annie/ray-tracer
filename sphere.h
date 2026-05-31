@@ -2,7 +2,6 @@
 #define SPHERE_H
 
 #include "hittable.h"
-#include "vec3.h"
 
 class sphere : public hittable {
     private:
@@ -14,7 +13,7 @@ class sphere : public hittable {
 
         // Override the hit function from the hittable class to determine if a ray hits the sphere
         bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override {
-            vec3 oc = r.origin() - center;
+            vec3 oc = center - r.origin();
             auto a = r.direction().length_squared();
             auto h = dot(r.direction(), oc);
             auto c = oc.length_squared() - radius*radius;
