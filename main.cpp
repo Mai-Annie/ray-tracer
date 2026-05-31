@@ -15,7 +15,7 @@ bool hit_sphere(const point3& center, double radius, const ray& r){
     if (discriminant < 0) {
         return -1.0; // no hit
     } else {
-        return (-b - std::sqrt(discriminant)) / (2.0*a); // hit, return the nearest root
+        return (h - std::sqrt(discriminant)) / (2.0*a); // hit, return the nearest root
     }
 }
 

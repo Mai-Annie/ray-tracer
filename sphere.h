@@ -37,8 +37,10 @@ class sphere : public hittable {
 
             rec.t = root;
             rec.p = r.at(rec.t);
-            rec.normal = (rec.p - center) / radius; // normal vector at the hit point
+            vec3 outward_normal = (rec.p - center) / radius; // normal vector at the hit point on the sphere
+            rec.set_face_normal(r, outward_normal); // set the hit record normal vector to point against the ray direction
             return true;
         }
-
 };
+
+#endif
