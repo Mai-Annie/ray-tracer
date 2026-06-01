@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include "hittable.h"
+#include "material.h"
 
 /*
 Two jobs:
@@ -100,14 +101,18 @@ class camera{
             hit_record rec;
 
             if (world.hit(r, interval(0.001, infinity), rec)) {
-                vec3 direction = rec.normal + random_unit_vector(); // scatter the ray in a random direction
-                                //in the hemisphere around the hit point normal for diffuse scattering
-                return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world); // recursively trace a ray in
-                        //the sampled direction and attenuate the color contribution by 0.5 to simulate diffuse reflection
-            }   
+                ray scattered;
+                color attenuation;
+
+                // if the ray is scattered, recursively trace the scattered ray and attenuate its color contribution
+                if (rec.mat->scatter(r, rec, attenuation, scattered))
+                    return attenuation * ray_color(scattered, depth-1, world);
+                return color(0, 0, 0);
+            }
+
             vec3 unit_direction = unit_vector(r.direction());
-            auto a = 0.5 * (unit_direction.y() + 1.0); // scale y from [-1,1] to [0,1]
-            return (1.0-a) * color(1.0, 1.0, 1.0) + a * color (1.0, 0.7, 0.8); // linear blend of white and light pink based on the y value of the ray direction
+            auto a = 0.5 * (unit_direction.y() + 1.0);
+            return (1.0-a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
         }
 };
 
