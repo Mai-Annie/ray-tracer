@@ -119,13 +119,22 @@ inline vec3 unit_vector(vec3 v) {
     return v / v.length();
 }
 
-inline vec3 random_unit_vector(){
+// generate random point inside unit disk
+inline vec3 random_in_unit_disk(){
     while (true){
-        auto p = vec3:: random(-1,1);
+        auto p = vec3(random_double(-1,1), random_double(-1,1), 0); ;
+        if (p.length_squared() < 1){
+            return p;
+        }
+    }
+}
+
+inline vec3 random_unit_vector() {
+    while (true) {
+        auto p = vec3::random(-1,1);
         auto lensq = p.length_squared();
-        if (1e-160 < lensq && lensq <=1) // reject points that are too close to zero 
-                        // length to avoid numerical issues, and reject points outside the unit sphere
-        return p /sqrt(lensq);
+        if (1e-160 < lensq && lensq <= 1.0)
+            return p / sqrt(lensq);
     }
 }
 

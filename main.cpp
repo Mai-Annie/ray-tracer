@@ -1,34 +1,72 @@
 #include "rtweekend.h"
 
+#include "camera.h"
+#include "hittable.h"
 #include "hittable_list.h"
 #include "material.h"
 #include "sphere.h"
-#include "hittable.h" 
-#include "camera.h"
 
 
-int main(){
-    // World
+int main() {
     hittable_list world;
 
-    auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0)); // create a Lambertian material with a yellow albedo for the ground
-    auto material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5)); // create a Lambertian material with a blue albedo for the center sphere
-    auto material_left   = make_shared<dielectric>(1.50); // create a dielectric material for the left sphere
-    auto material_bubble = make_shared<dielectric>(1.0/1.5); //bubble effect
-    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0); // create a metal material with an orange albedo for the
+    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5)); // create a ground material with a gray albedo
+    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material)); // add a large sphere to serve as the ground plane, with the center below the y=0 plane and a large radius to create a flat surface
 
-    world.add(make_shared<sphere>(point3(0,0,-1.2), 0.5, material_center)); // add a sphere centered at (0,0,-1.2) with radius 0.5 to the world
-    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground)); // add a large sphere centered at (0,-100.5,-1) with radius 100 to the world to serve as the ground plane
-    world.add(make_shared<sphere>(point3(-1,0,-1), 0.5, material_left)); 
-    world.add(make_shared<sphere>(point3(-1,0,-1), 0.4, material_bubble)); // add a smaller sphere with a negative radius at the same location as the left sphere to create a bubble effect
-    world.add(make_shared<sphere>(point3(1,0,-1), 0.5, material_right)); 
+    // Add a large number of small spheres with random positions and materials to create a more complex scene
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            auto choose_mat = random_double();
+            point3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
+
+            // Only add the sphere if it is not too close to the large spheres in the scene (to avoid cluttering the scene with too many small spheres around the large ones)
+            if ((center - point3(4, 0.2, 0)).length() > 0.9) {
+                shared_ptr<material> sphere_material;
+
+                if (choose_mat < 0.8) {
+                    // diffuse
+                    auto albedo = color::random() * color::random();
+                    sphere_material = make_shared<lambertian>(albedo);
+                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+                } else if (choose_mat < 0.95) {
+                    // metal
+                    auto albedo = color::random(0.5, 1);
+                    auto fuzz = random_double(0, 0.5);
+                    sphere_material = make_shared<metal>(albedo, fuzz);
+                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+                } else {
+                    // glass
+                    sphere_material = make_shared<dielectric>(1.5);
+                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+                }
+            }
+        }
+    }
+ 
+    // Add three large spheres with different materials to serve as focal points in the scene
+    auto material1 = make_shared<dielectric>(1.5);
+    world.add(make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
+
+    auto material2 = make_shared<lambertian>(color(0.4, 0.2, 0.1));
+    world.add(make_shared<sphere>(point3(-4, 1, 0), 1.0, material2));
+
+    auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
+    world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
     camera cam;
 
-    cam.aspect_ratio = 16.0 / 9.0; // set the aspect ratio of the camera to 16:9
-    cam.image_width = 400; // set the rendered image width to 400 pixels
-    cam.samples_per_pixel = 100; // set the number of samples per pixel for anti-aliasing to 100
-    cam.max_depth = 50; // set the maximum ray bounce depth to 50
+    cam.aspect_ratio      = 16.0 / 9.0;
+    cam.image_width       = 1200;
+    cam.samples_per_pixel = 10;
+    cam.max_depth         = 20;
 
-    cam.render(world); // render the world using the camera
+    cam.vfov     = 20;
+    cam.lookfrom = point3(13,2,3);
+    cam.lookat   = point3(0,0,0);
+    cam.vup      = vec3(0,1,0);
+
+    cam.defocus_angle = 0.6;
+    cam.focus_dist    = 10.0;
+
+    cam.render(world);
 }
