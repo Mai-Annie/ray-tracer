@@ -17,6 +17,7 @@ int main(){
     cam.aspect_ratio = 16.0 / 9.0; // set the aspect ratio of the camera to 16:9
     cam.image_width = 400; // set the rendered image width to 400 pixels
     cam.samples_per_pixel = 100; // set the number of samples per pixel for anti-aliasing to 100
+    cam.max_depth = 50; // set the maximum ray bounce depth to 50
 
     cam.render(world); // render the world using the camera
 }

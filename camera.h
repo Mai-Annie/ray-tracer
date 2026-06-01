@@ -14,9 +14,8 @@ class camera{
         double aspect_ratio = 1; // ratio of image width over height
         int image_width = 100; // rendered image width in pixels
         int samples_per_pixel = 1; // number of rays to sample per pixel for anti-aliasing
-        int max_depth = 10; // maximum ray bounce depth
         int max_depth = 10; // maximum nb of ray bounces into a scene
-        
+
         void render(const hittable& world){
             initialize();
 
@@ -30,7 +29,7 @@ class camera{
                     color pixel_color(0,0,0); // initialize the pixel color to black
                     for (int sample = 0; sample < samples_per_pixel; sample++){
                         ray r = get_ray(i, j); // get a ray for the current pixel and sample
-                        pixel_color += ray_color(r, world, max_depth); // accumulate the color contribution from the ray
+                        pixel_color += ray_color(r, max_depth, world); // accumulate the color contribution from the ray
                     }
                     write_color(std::cout, pixel_samples_scale * pixel_color); // write the final color for the pixel to the output stream, scaling by the number of samples per pixel
                 }
@@ -94,15 +93,16 @@ class camera{
         }
 
         // Returns color for a given scene ray
-        color ray_color(const ray& r, const hittable& world, int depth) const{
+        color ray_color(const ray& r, int depth, const hittable& world) const{
+            // if we've exceeded the ray bounce limit, no more light is gathered
             if (depth <= 0) return color(0, 0, 0);
 
             hit_record rec;
 
             if (world.hit(r, interval(0.001, infinity), rec)) {
-                vec3 direction = random_on_hemisphere(rec.normal); // sample a random direction
+                vec3 direction = rec.normal + random_unit_vector(); // scatter the ray in a random direction
                                 //in the hemisphere around the hit point normal for diffuse scattering
-                return 0.5 * ray_color(ray(rec.p, direction), world, depth - 1); // recursively trace a ray in
+                return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world); // recursively trace a ray in
                         //the sampled direction and attenuate the color contribution by 0.5 to simulate diffuse reflection
             }   
             vec3 unit_direction = unit_vector(r.direction());
