@@ -13,8 +13,8 @@ int main(){
 
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0)); // create a Lambertian material with a yellow albedo for the ground
     auto material_center = make_shared<lambertian>(color(0.1, 0.2, 0.5)); // create a Lambertian material with a blue albedo for the center sphere
-    auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8)); // create a metal material with a white albedo for the left sphere
-    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2)); // create a metal material with an orange albedo for the
+    auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3); // create a metal material with a white albedo for the left sphere
+    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0); // create a metal material with an orange albedo for the
 
     world.add(make_shared<sphere>(point3(0,0,-1.2), 0.5, material_center)); // add a sphere centered at (0,0,-1.2) with radius 0.5 to the world
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100, material_ground)); // add a large sphere centered at (0,-100.5,-1) with radius 100 to the world to serve as the ground plane
