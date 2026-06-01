@@ -10,7 +10,7 @@ class sphere : public hittable {
         shared_ptr<material> mat; // material of the sphere, used for shading calculations
 
     public:
-        sphere(const point3& center, double radius, shared_ptr<material> material) : center(center), radius(std::fmax(0,radius)), mat(material) {}
+        sphere(const point3& center, double radius, shared_ptr<material> material) : center(center), radius(radius), mat(material) {}
 
         // Override the hit function from the hittable class to determine if a ray hits the sphere
         bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
